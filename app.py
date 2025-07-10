@@ -30,8 +30,10 @@ with tab1:
     # Input fields
     entreprise = st.text_input("Entreprise")
     poste = st.text_input("Poste")
+    base_line = st.text_input("Base Line", value="Expert IA - pipelines ML - Data - DevOps - cybersecurity")
     source = st.text_input("Source")
     identifiant = st.text_input("Identifiant")
+    salaire = st.text_input("Salaire")
     description = st.text_area("Description")
 
     # Submit button
@@ -42,8 +44,10 @@ with tab1:
                 variables = {
                     "entreprise": entreprise,
                     "poste": poste,
+                    "base_line": base_line,
                     "source": source,
                     "identifiant": identifiant,
+                    "salaire": salaire,
                     "description": description
                 }
 
@@ -70,13 +74,14 @@ with tab1:
 
                     # Save document data to the database
                     try:
+                        logger.info("Attempting to save document to database")
                         document_id = save_document(variables)
                         if document_id:
                             logger.info(f"Document saved to database with ID: {document_id}")
                             st.success(f"Document généré avec succès et enregistré dans la base de données (ID: {document_id})!")
                         else:
-                            logger.warning("Failed to save document to database")
-                            st.warning("Document généré avec succès, mais non enregistré dans la base de données.")
+                            logger.warning("Failed to save document to database - save_document returned None")
+                            st.warning("Document généré avec succès, mais non enregistré dans la base de données. Vérifiez la connexion à la base de données.")
                     except Exception as db_error:
                         logger.error(f"Error saving document to database: {db_error}")
                         st.warning(f"Document généré avec succès, mais erreur lors de l'enregistrement en base de données: {db_error}")
@@ -103,9 +108,9 @@ with tab2:
         documents = get_all_documents()
 
         if documents:
-            # Create a DataFrame with just the company and position columns
-            df = pd.DataFrame([(doc['entreprise'], doc['poste']) for doc in documents], 
-                            columns=['Entreprise', 'Poste'])
+            # Create a DataFrame with company, position, base line, and salary columns
+            df = pd.DataFrame([(doc['entreprise'], doc['poste'], doc.get('base_line', ''), doc.get('salaire', '')) for doc in documents], 
+                            columns=['Entreprise', 'Poste', 'Base Line', 'Salaire'])
 
             # Display the DataFrame as a table
             st.dataframe(df, use_container_width=True)
