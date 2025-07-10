@@ -22,6 +22,8 @@ services:
 
   postulator-db:
     image: postgres:14
+    ports:
+      - "5555:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postulator_password
