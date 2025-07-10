@@ -3,6 +3,10 @@ import os
 from document_service import replace_variables, create_document_copy, delete_document
 from pdf_service import export_as_pdf
 from config import DOCUMENT_ID, OUTPUT_FILENAME
+from db_service import init_db, save_document
+
+# Initialize the database
+init_db()
 
 st.title("Générateur de Document")
 
@@ -47,7 +51,12 @@ if st.button("Générer le document"):
                 # Delete the copy as it's no longer needed
                 delete_document(copy_id)
 
-                st.success("Document généré avec succès!")
+                # Save document data to the database
+                document_id = save_document(variables)
+                if document_id:
+                    st.success(f"Document généré avec succès et enregistré dans la base de données (ID: {document_id})!")
+                else:
+                    st.success("Document généré avec succès, mais non enregistré dans la base de données.")
 
                 # Provide download link
                 if os.path.exists(OUTPUT_FILENAME):

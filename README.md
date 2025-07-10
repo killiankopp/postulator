@@ -10,6 +10,7 @@ The project has been refactored to follow the Single Responsibility Principle (S
 - **auth.py**: Handles Google API authentication
 - **document_service.py**: Manages document manipulation (replacing variables)
 - **pdf_service.py**: Handles PDF export functionality
+- **db_service.py**: Manages database operations for storing document data
 - **config.py**: Stores configuration values
 - **test_modules.py**: Tests the functionality of the modules
 
@@ -17,22 +18,69 @@ The project has been refactored to follow the Single Responsibility Principle (S
 
 ### Configuration
 
-The application can be configured using environment variables:
+The application can be configured using environment variables or a `.env` file:
 
-- `DOCUMENT_ID`: Google Doc template ID (defaults to '1xdg-OGy5NCIIA5OGnU8OHPb-E40X9MJsJw8KuQBX7Sg')
+- `DOCUMENT_ID`: Google Doc template ID (required)
 - `OUTPUT_FILENAME`: Output PDF filename (defaults to "CV_Killian_KOPP.pdf")
-- `CREDENTIALS_JSON`: Google API credentials JSON content (defaults to reading from credentials.json file)
+- `CREDENTIALS_JSON`: Google API credentials JSON content (required)
+- `DB_HOST`: Database host (defaults to "localhost")
+- `DB_PORT`: Database port (defaults to "5432")
+- `DB_NAME`: Database name (defaults to "postulator")
+- `DB_USER`: Database user (defaults to "postgres")
+- `DB_PASSWORD`: Database password (defaults to "")
+
+You can set these variables directly in your environment or create a `.env` file in the project root directory. The application will automatically load variables from the `.env` file if it exists.
 
 Example:
 ```bash
 export DOCUMENT_ID="your-google-doc-id"
 export OUTPUT_FILENAME="your-output-filename.pdf"
 export CREDENTIALS_JSON='{"installed":{"client_id":"your-client-id","project_id":"your-project-id","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"your-client-secret","redirect_uris":["http://localhost"]}}'
+export DB_HOST="your-database-host"
+export DB_PORT="5432"
+export DB_NAME="your-database-name"
+export DB_USER="your-database-user"
+export DB_PASSWORD="your-database-password"
 ```
 
-### Streamlit Interface
+### Docker Compose
 
-Run the Streamlit application:
+The easiest way to run the application is using Docker Compose:
+
+1. Make sure you have Docker and Docker Compose installed on your system
+2. Set the required environment variables or create a `.env` file with:
+   ```
+   # Required variables
+   DOCUMENT_ID=your-google-doc-id
+   OUTPUT_FILENAME=your-output-filename.pdf
+
+   # Database configuration (optional, defaults are set in docker-compose.yml)
+   DB_HOST=postulator-db
+   DB_PORT=5432
+   DB_NAME=postulator
+   DB_USER=postgres
+   DB_PASSWORD=postulator_password
+
+   # Google API credentials - required
+   # Paste your credentials JSON content here
+   CREDENTIALS_JSON={"installed":{"client_id":"your-client-id","project_id":"your-project-id","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"your-client-secret","redirect_uris":["http://localhost"]}}
+   ```
+   You can copy the `.env.example` file to `.env` and modify it with your values.
+4. Run the application:
+   ```bash
+   docker-compose up -d
+   ```
+5. Access the application at http://localhost:8501
+6. To stop the application:
+   ```bash
+   docker-compose down
+   ```
+
+Generated PDF files will be saved in the `output` directory.
+
+### Streamlit Interface (Local Development)
+
+For local development, run the Streamlit application:
 
 ```bash
 streamlit run app.py
@@ -41,7 +89,8 @@ streamlit run app.py
 This will open a web interface where you can:
 1. Enter company, position, source, identifier, and description information
 2. Click "Générer le document" to create the document
-3. Download the generated PDF
+3. The document data is stored in the database
+4. Download the generated PDF
 
 
 ## Development
@@ -67,3 +116,7 @@ To add new features:
 - Python 3.6+
 - Streamlit
 - Google API client libraries
+- PostgreSQL database
+- psycopg2-binary (Python PostgreSQL adapter)
+
+See `requirements.txt` for specific version requirements.

@@ -11,8 +11,7 @@ def get_credentials():
     """
     Get or refresh Google API credentials.
 
-    Credentials can be provided either via the CREDENTIALS_JSON environment variable
-    or through a credentials.json file in the current directory.
+    Credentials are provided via the CREDENTIALS_JSON environment variable.
 
     Returns:
         Credentials: Google API credentials
@@ -105,9 +104,8 @@ def get_credentials():
 
                 raise ValueError(error_msg)
         else:
-            # Fall back to credentials.json file
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            # No credentials provided
+            raise ValueError("CREDENTIALS_JSON environment variable is not set. Please provide Google API credentials.")
 
         # Save the token for future use
         with open('token.json', 'w') as token:

@@ -2,3 +2,14 @@
 .idea
 credentials.json
 token.json
+.env
+output/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.pdf
+output
+_data_postgre
+.env

@@ -1,0 +1,37 @@
+services:
+  postulator:
+    build: .
+    ports:
+      - "8599:8501"
+    environment:
+      - DOCUMENT_ID=${DOCUMENT_ID}
+      - OUTPUT_FILENAME=${OUTPUT_FILENAME:-CV_Killian_KOPP.pdf}
+      - CREDENTIALS_JSON=${CREDENTIALS_JSON}
+      - DB_HOST=postulator-db
+      - DB_PORT=5432
+      - DB_NAME=postulator
+      - DB_USER=postgres
+      - DB_PASSWORD=postulator_password
+    volumes:
+      - ./output:/app/output
+    depends_on:
+      - postulator-db
+    restart: unless-stopped
+    networks:
+      - postulator-network
+
+  postulator-db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postulator_password
+      - POSTGRES_DB=postulator
+    volumes:
+      - ./_data_postgre:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - postulator-network
+
+networks:
+  postulator-network:
+    driver: bridge
