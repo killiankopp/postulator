@@ -4,7 +4,7 @@ import pandas as pd
 import logging
 from document_service import replace_variables, create_document_copy, delete_document
 from pdf_service import export_as_pdf
-from config import DOCUMENT_ID, OUTPUT_FILENAME
+from config import DOCUMENT_ID, OUTPUT_FILENAME, COVER_LETTER_DOCUMENT_ID, COVER_LETTER_OUTPUT_FILENAME
 from db_service import init_db, save_document, get_all_documents
 
 # Set up logging
@@ -52,25 +52,49 @@ with tab1:
                 }
 
                 try:
+                    # Process CV document
+                    logger.info("Processing CV document")
                     # Store the original template ID for reference
-                    template_id = DOCUMENT_ID
+                    cv_template_id = DOCUMENT_ID
 
                     # Create a copy of the template document
-                    copy_id = create_document_copy(template_id)
+                    cv_copy_id = create_document_copy(cv_template_id)
 
                     # Ensure copy_id is different from template_id
-                    if copy_id == template_id:
-                        raise ValueError("Copy ID is the same as template ID")
+                    if cv_copy_id == cv_template_id:
+                        raise ValueError("CV Copy ID is the same as template ID")
 
                     # Replace variables in the copy, not the template
                     # Pass template_id to ensure we're not modifying the original template
-                    replace_variables(copy_id, variables, template_id=template_id)
+                    replace_variables(cv_copy_id, variables, template_id=cv_template_id)
 
                     # Export the copy as PDF
-                    export_as_pdf(copy_id, OUTPUT_FILENAME)
+                    export_as_pdf(cv_copy_id, OUTPUT_FILENAME)
 
                     # Delete the copy as it's no longer needed
-                    delete_document(copy_id)
+                    delete_document(cv_copy_id)
+
+                    # Process Cover Letter document
+                    logger.info("Processing Cover Letter document")
+                    # Store the original template ID for reference
+                    cover_letter_template_id = COVER_LETTER_DOCUMENT_ID
+
+                    # Create a copy of the template document
+                    cover_letter_copy_id = create_document_copy(cover_letter_template_id)
+
+                    # Ensure copy_id is different from template_id
+                    if cover_letter_copy_id == cover_letter_template_id:
+                        raise ValueError("Cover Letter Copy ID is the same as template ID")
+
+                    # Replace variables in the copy, not the template
+                    # Pass template_id to ensure we're not modifying the original template
+                    replace_variables(cover_letter_copy_id, variables, template_id=cover_letter_template_id)
+
+                    # Export the copy as PDF
+                    export_as_pdf(cover_letter_copy_id, COVER_LETTER_OUTPUT_FILENAME)
+
+                    # Delete the copy as it's no longer needed
+                    delete_document(cover_letter_copy_id)
 
                     # Save document data to the database
                     try:
@@ -78,23 +102,36 @@ with tab1:
                         document_id = save_document(variables)
                         if document_id:
                             logger.info(f"Document saved to database with ID: {document_id}")
-                            st.success(f"Document généré avec succès et enregistré dans la base de données (ID: {document_id})!")
+                            st.success(f"Documents générés avec succès et enregistrés dans la base de données (ID: {document_id})!")
                         else:
                             logger.warning("Failed to save document to database - save_document returned None")
-                            st.warning("Document généré avec succès, mais non enregistré dans la base de données. Vérifiez la connexion à la base de données.")
+                            st.warning("Documents générés avec succès, mais non enregistrés dans la base de données. Vérifiez la connexion à la base de données.")
                     except Exception as db_error:
                         logger.error(f"Error saving document to database: {db_error}")
-                        st.warning(f"Document généré avec succès, mais erreur lors de l'enregistrement en base de données: {db_error}")
+                        st.warning(f"Documents générés avec succès, mais erreur lors de l'enregistrement en base de données: {db_error}")
 
-                    # Provide download link
-                    if os.path.exists(OUTPUT_FILENAME):
-                        with open(OUTPUT_FILENAME, "rb") as file:
-                            btn = st.download_button(
-                                label="Télécharger le PDF",
-                                data=file,
-                                file_name=OUTPUT_FILENAME,
-                                mime="application/pdf"
-                            )
+                    # Provide download links
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        if os.path.exists(OUTPUT_FILENAME):
+                            with open(OUTPUT_FILENAME, "rb") as file:
+                                btn = st.download_button(
+                                    label="Télécharger le CV",
+                                    data=file,
+                                    file_name=OUTPUT_FILENAME,
+                                    mime="application/pdf"
+                                )
+
+                    with col2:
+                        if os.path.exists(COVER_LETTER_OUTPUT_FILENAME):
+                            with open(COVER_LETTER_OUTPUT_FILENAME, "rb") as file:
+                                btn = st.download_button(
+                                    label="Télécharger la Lettre de Motivation",
+                                    data=file,
+                                    file_name=COVER_LETTER_OUTPUT_FILENAME,
+                                    mime="application/pdf"
+                                )
                 except Exception as e:
                     st.error(f"Une erreur est survenue: {str(e)}")
         else:
