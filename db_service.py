@@ -55,12 +55,20 @@ def init_db():
                 base_line TEXT,
                 salaire TEXT,
                 description TEXT,
+                skills_text TEXT,
+                skill1 TEXT,
+                skill2 TEXT,
+                skill3 TEXT,
+                skill4 TEXT,
+                skill5 TEXT,
+                skill6 TEXT,
+                url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
         # Check for all required columns and add them if they don't exist
-        required_columns = ['entreprise', 'poste', 'source', 'identifiant', 'base_line', 'salaire', 'description']
+        required_columns = ['entreprise', 'poste', 'source', 'identifiant', 'base_line', 'salaire', 'description', 'skills_text', 'skill1', 'skill2', 'skill3', 'skill4', 'skill5', 'skill6', 'url']
 
         # Get existing columns
         cur.execute("""
@@ -115,8 +123,8 @@ def save_document(variables):
 
         # Insert document data
         query = sql.SQL("""
-            INSERT INTO documents (entreprise, poste, source, identifiant, base_line, salaire, description)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO documents (entreprise, poste, source, identifiant, base_line, salaire, description, skills_text, skill1, skill2, skill3, skill4, skill5, skill6, url)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """)
 
@@ -131,7 +139,15 @@ def save_document(variables):
             variables.get('identifiant', ''),
             variables.get('base_line', ''),
             variables.get('salaire', ''),
-            variables.get('description', '')
+            variables.get('description', ''),
+            variables.get('skills_text', ''),
+            variables.get('skill1', ''),
+            variables.get('skill2', ''),
+            variables.get('skill3', ''),
+            variables.get('skill4', ''),
+            variables.get('skill5', ''),
+            variables.get('skill6', ''),
+            variables.get('url', '')
         )
 
         # Log the query execution
@@ -190,7 +206,7 @@ def get_document(document_id):
         cur = conn.cursor()
 
         query = sql.SQL("""
-            SELECT id, entreprise, poste, source, identifiant, base_line, salaire, description, created_at
+            SELECT id, entreprise, poste, source, identifiant, base_line, salaire, description, skills_text, skill1, skill2, skill3, skill4, skill5, skill6, url, created_at
             FROM documents
             WHERE id = %s
         """)
@@ -210,7 +226,15 @@ def get_document(document_id):
                 'base_line': row[5],
                 'salaire': row[6],
                 'description': row[7],
-                'created_at': row[8]
+                'skills_text': row[8],
+                'skill1': row[9],
+                'skill2': row[10],
+                'skill3': row[11],
+                'skill4': row[12],
+                'skill5': row[13],
+                'skill6': row[14],
+                'url': row[15],
+                'created_at': row[16]
             }
             logger.info(f"Document retrieved successfully: {document['entreprise']}, {document['poste']}")
         else:
@@ -243,7 +267,7 @@ def get_all_documents():
         cur = conn.cursor()
 
         query = sql.SQL("""
-            SELECT id, entreprise, poste, source, identifiant, base_line, salaire, description, created_at
+            SELECT id, entreprise, poste, source, identifiant, base_line, salaire, description, skills_text, skill1, skill2, skill3, skill4, skill5, skill6, url, created_at
             FROM documents
             ORDER BY created_at DESC
         """)
@@ -263,7 +287,15 @@ def get_all_documents():
                 'base_line': row[5],
                 'salaire': row[6],
                 'description': row[7],
-                'created_at': row[8]
+                'skills_text': row[8],
+                'skill1': row[9],
+                'skill2': row[10],
+                'skill3': row[11],
+                'skill4': row[12],
+                'skill5': row[13],
+                'skill6': row[14],
+                'url': row[15],
+                'created_at': row[16]
             }
             documents.append(document)
 

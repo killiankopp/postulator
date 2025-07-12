@@ -6,6 +6,12 @@ from document_service import replace_variables, create_document_copy, delete_doc
 from pdf_service import export_as_pdf
 from config import DOCUMENT_ID, OUTPUT_FILENAME, COVER_LETTER_DOCUMENT_ID, COVER_LETTER_OUTPUT_FILENAME
 from db_service import init_db, save_document, get_all_documents
+from skills_config import SKILLS, SKILL_OPTIONS
+
+# Define output directory
+OUTPUT_DIR = "output"
+# Ensure output directory exists
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -31,10 +37,42 @@ with tab1:
     entreprise = st.text_input("Entreprise")
     poste = st.text_input("Poste")
     base_line = st.text_input("Base Line", value="Expert IA - pipelines ML - Data - DevOps - cybersecurity")
+    salaire = st.text_input("Salaire")
+
+    # Skills fields
+    skills_text = st.text_area("Compétences 0")
+
+    # Select fields for predefined skills
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        skill1 = st.selectbox("Compétence 1", options=SKILL_OPTIONS, index=0)
+        st.markdown(f"*{SKILLS[skill1]}*")
+
+    with col2:
+        skill2 = st.selectbox("Compétence 2", options=SKILL_OPTIONS, index=1)
+        st.markdown(f"*{SKILLS[skill2]}*")
+
+    with col3:
+        skill3 = st.selectbox("Compétence 3", options=SKILL_OPTIONS, index=2)
+        st.markdown(f"*{SKILLS[skill3]}*")
+
+    col4, col5, col6 = st.columns(3)
+    with col4:
+        skill4 = st.selectbox("Compétence 4", options=SKILL_OPTIONS, index=3)
+        st.markdown(f"*{SKILLS[skill4]}*")
+
+    with col5:
+        skill5 = st.selectbox("Compétence 5", options=SKILL_OPTIONS, index=4)
+        st.markdown(f"*{SKILLS[skill5]}*")
+
+    with col6:
+        skill6 = st.selectbox("Compétence 6", options=SKILL_OPTIONS, index=5)
+        st.markdown(f"*{SKILLS[skill6]}*")
+
     source = st.text_input("Source")
     identifiant = st.text_input("Identifiant")
-    salaire = st.text_input("Salaire")
     description = st.text_area("Description")
+    url = st.text_input("URL")
 
     # Submit button
     if st.button("Générer les documents"):
@@ -47,8 +85,16 @@ with tab1:
                     "base_line": base_line,
                     "source": source,
                     "identifiant": identifiant,
+                    "url": url,
                     "salaire": salaire,
-                    "description": description
+                    "description": description,
+                    "skills_text": skills_text,
+                    "skill1": SKILLS[skill1],
+                    "skill2": SKILLS[skill2],
+                    "skill3": SKILLS[skill3],
+                    "skill4": SKILLS[skill4],
+                    "skill5": SKILLS[skill5],
+                    "skill6": SKILLS[skill6]
                 }
 
                 try:
@@ -69,7 +115,8 @@ with tab1:
                     replace_variables(cv_copy_id, variables, template_id=cv_template_id)
 
                     # Export the copy as PDF
-                    export_as_pdf(cv_copy_id, OUTPUT_FILENAME)
+                    cv_output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
+                    export_as_pdf(cv_copy_id, cv_output_path)
 
                     # Delete the copy as it's no longer needed
                     delete_document(cv_copy_id)
@@ -91,7 +138,8 @@ with tab1:
                     replace_variables(cover_letter_copy_id, variables, template_id=cover_letter_template_id)
 
                     # Export the copy as PDF
-                    export_as_pdf(cover_letter_copy_id, COVER_LETTER_OUTPUT_FILENAME)
+                    cover_letter_output_path = os.path.join(OUTPUT_DIR, COVER_LETTER_OUTPUT_FILENAME)
+                    export_as_pdf(cover_letter_copy_id, cover_letter_output_path)
 
                     # Delete the copy as it's no longer needed
                     delete_document(cover_letter_copy_id)
@@ -114,8 +162,8 @@ with tab1:
                     col1, col2 = st.columns(2)
 
                     with col1:
-                        if os.path.exists(OUTPUT_FILENAME):
-                            with open(OUTPUT_FILENAME, "rb") as file:
+                        if os.path.exists(cv_output_path):
+                            with open(cv_output_path, "rb") as file:
                                 btn = st.download_button(
                                     label="Télécharger le CV",
                                     data=file,
@@ -124,8 +172,8 @@ with tab1:
                                 )
 
                     with col2:
-                        if os.path.exists(COVER_LETTER_OUTPUT_FILENAME):
-                            with open(COVER_LETTER_OUTPUT_FILENAME, "rb") as file:
+                        if os.path.exists(cover_letter_output_path):
+                            with open(cover_letter_output_path, "rb") as file:
                                 btn = st.download_button(
                                     label="Télécharger la Lettre de Motivation",
                                     data=file,
@@ -145,9 +193,21 @@ with tab2:
         documents = get_all_documents()
 
         if documents:
-            # Create a DataFrame with company, position, base line, and salary columns
-            df = pd.DataFrame([(doc['entreprise'], doc['poste'], doc.get('base_line', ''), doc.get('salaire', '')) for doc in documents], 
-                            columns=['Entreprise', 'Poste', 'Base Line', 'Salaire'])
+            # Create a DataFrame with company, position, base line, salary, url, and skills columns
+            df = pd.DataFrame([(
+                doc['entreprise'], 
+                doc['poste'], 
+                doc.get('base_line', ''), 
+                doc.get('salaire', ''),
+                doc.get('url', ''),
+                doc.get('skill1', ''),
+                doc.get('skill2', ''),
+                doc.get('skill3', ''),
+                doc.get('skill4', ''),
+                doc.get('skill5', ''),
+                doc.get('skill6', '')
+            ) for doc in documents], 
+                            columns=['Entreprise', 'Poste', 'Base Line', 'Salaire', 'URL', 'Compétence 1', 'Compétence 2', 'Compétence 3', 'Compétence 4', 'Compétence 5', 'Compétence 6'])
 
             # Display the DataFrame as a table
             st.dataframe(df, use_container_width=True)
