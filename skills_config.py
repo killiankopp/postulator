@@ -11,7 +11,15 @@ SKILLS = {
     "Bases de données": "Bases de données : MongoDB, PostgreSQL, MariaDB, MySQL, Neo4j (Cypher).",
     "Cloud": "Cloud : GCP, AWS, Azure, Kubernetes, Docker",
     "Sécurité & Auth": "Securité : OAuth2, OpenID, Keycloak, Vault, secrets management.",
-    "MLOPS": "MLOPS : MLflow, DVC, versioning, monitoring, CI/CD ML."
+    "MLOPS": "MLOPS : MLflow, DVC, versioning, monitoring, CI/CD ML.",
+    "Management & Leadership": "Management : encadrement d’équipes techniques, mentoring, recrutement, animation de rituels agiles.",
+    "Architecture Logicielle": "Architecture : conception microservices, event-driven, DDD, bonnes pratiques de scalabilité et résilience.",
+    "SRE & Observabilité": "SRE : haute disponibilité, observabilité, alerting, SLO/SLA, automatisation de l’exploitation.",
+    "Conduite de Projet": "Conduite de projet : Agile, Scrum, Kanban, gestion de backlog, priorisation produit-tech.",
+    "Engineering Management": "Engineering management : stratégie technique, alignement produit/tech, roadmap, gestion budgétaire.",
+    "Data Engineering": "Data Engineering : ETL, ELT, Spark, DuckDB, data lakes, data warehouses, data pipelines.",
+    "CTO Skills": "CTO : vision stratégique, choix technologiques, gouvernance, sécurité, conformité, innovation, POC.",
+    "Frontend": "Frontend : Vue.js, React, React Native, TypeScript, composants réutilisables, UX/UI, intégration APIs."
 }
 
 # List of skill names for select fields

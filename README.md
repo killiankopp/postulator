@@ -83,6 +83,7 @@ Generated PDF files will be saved in the `output` directory.
 For local development, run the Streamlit application:
 
 ```bash
+source .venv/bin/activate
 streamlit run app.py
 ```
 

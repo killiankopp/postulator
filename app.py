@@ -36,7 +36,7 @@ with tab1:
     # Input fields
     entreprise = st.text_input("Entreprise")
     poste = st.text_input("Poste")
-    base_line = st.text_input("Base Line", value="Expert IA - pipelines ML - Data - DevOps - cybersecurity")
+    base_line = st.text_input("Base Line", value="AI & ML Solutions Architect | MLOps & DevOps | Data Engineering | Cybersecurity | Transformation digitale")
     salaire = st.text_input("Salaire")
 
     # Skills fields
