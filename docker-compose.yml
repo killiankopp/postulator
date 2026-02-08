@@ -1,6 +1,6 @@
 services:
   postulator:
-    build: .
+    image: postulator
     ports:
       - "8599:8501"
     environment:
